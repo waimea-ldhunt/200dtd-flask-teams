@@ -61,19 +61,25 @@ def show_all_things():
 #-----------------------------------------------------------
 # Thing page route - Show details of a single thing
 #-----------------------------------------------------------
-@app.get("/thing/<int:id>")
-def show_one_thing(id):
+@app.get("/team/<string:code>")
+def show_one_team(code):
     with connect_db() as client:
         # Get the thing details from the DB
-        sql = "SELECT id, name, price FROM things WHERE id=?"
-        params = [id]
+        sql = "SELECT * FROM teams WHERE code=?"
+        params = [code]
         result = client.execute(sql, params)
 
         # Did we get a result?
         if result.rows:
             # yes, so show it on the page
-            thing = result.rows[0]
-            return render_template("pages/thing.jinja", thing=thing)
+            team = result.rows[0]
+
+            sql = "SELECT id, name FROM members WHERE team=?"
+            params = [code]
+            result = client.execute(sql, params)
+            members = result.rows
+
+            return render_template("pages/team.jinja", team=team, members=members)
 
         else:
             # No, so show error
@@ -101,21 +107,40 @@ def add_a_thing():
         # Go back to the home page
         flash(f"Thing '{name}' added", "success")
         return redirect("/things")
+    
+@app.post("/add/<string:code>")
+def add_a_player_to_specific_team(code):
+    # Get the data from the form
+    name  = request.form.get("name")
+
+    # Sanitise the text inputs
+    name = html.escape(name)
+
+    with connect_db() as client:
+        # Add the thing to the DB
+        sql = "INSERT INTO members (name, team) VALUES (?, ?)"
+        params = [name, code]
+        client.execute(sql, params)
+
+        # Go back to the home page
+        flash(f"Member '{name}' added", "success")
+        return redirect(f"/team/{code}")
 
 
 #-----------------------------------------------------------
 # Route for deleting a thing, Id given in the route
 #-----------------------------------------------------------
-@app.get("/delete/<int:id>")
-def delete_a_thing(id):
+@app.get("/delete/member/<int:id>")
+def delete_a_member(id):
     with connect_db() as client:
         # Delete the thing from the DB
-        sql = "DELETE FROM things WHERE id=?"
+        sql = "DELETE FROM members WHERE id=?"
         params = [id]
         client.execute(sql, params)
 
         # Go back to the home page
-        flash("Thing deleted", "success")
-        return redirect("/things")
+        flash("Member deleted", "success")
+        return redirect("/")
+
 
 

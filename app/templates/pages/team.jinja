@@ -1,0 +1,69 @@
+{#=====================================================
+  Thing page
+  - Shows details of a single thing
+  - Has a delete link to remove it
+=====================================================#}
+
+{% extends 'pages/base.jinja' %}
+
+
+{% block title %}
+
+    Flask Demo - {{team.name}}
+
+{% endblock %}
+
+
+{% block content %}
+
+    <h1>{{team.name}}</h1>
+
+
+    <article>
+
+        <header>
+            <h3>{{team.code}}</h3>
+        </header>
+
+        <p><strong><a href="https://www.{{team.website}}">Website</a></strong></p>
+
+        <p>{{team.description }}</p>
+
+        <p><strong>Members:</strong></p>
+
+        <table>
+            <thead>
+                <th>Name</th>
+                <th></th>
+            </thead>
+
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td><strong><a href="/member/{{member.id}}">{{member.name}}</a></strong></td>
+                        <td><a href="/delete/member/{{member.id}}" onclick="return confirm('Are you sure you wish to remove {{member.name}} from {{team.name}}?');">Remove member</a></td>
+                    </tr>
+                {% endfor %}    
+            </tbody> 
+        </table>   
+
+        <p><strong>Add Member to {{team.name}}:</strong></p>
+
+        <form action="/add/{{team.code}}" method="POST">
+            <fieldset role="group">
+                <input name="name" placeholder="New Member Name">
+                <input type="submit" value="Add new member">
+            </fieldset>
+        </form>
+
+        <footer>
+            <a href="/delete" onclick="return confirm('Are you sure you wish to delete {{team.name}}?');">Delete team</a>
+        </footer>
+
+    </article>
+
+
+    <a role="button" href="/teams">Back to Teams</a>
+
+{% endblock %}
+

@@ -20,15 +20,26 @@
     <h1>Teams</h1>
 
     <table>
-        <thead></thead>
-        <thead></thead>
+        <thead>
+            <th>Code</th>
+            <th>Team</th>
+            <th>Logo</th>
+            
+        </thead>
+
+        <tbody>
+            {% for team in teams %}
+
+                <tr>
+                    <td>{{team.code}}</td>
+                    <td><a href="/team/{{team.code}}">{{team.name}}</a></td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
     </table>
 
-    {% for team in teams %}
-
-    <h2>{{team.code}} | {{team.name}}</h2>
-
-    {% endfor %}
+    
 
 {% endblock %}
 
