@@ -22,17 +22,22 @@
     <article>
 
         <p><strong>Team: <a href="/team/{{member.team}}">{{member.team}}</a></strong></p>
-
-        <p>{{member.notes}}</p>
+        <p><strong>Notes:</strong></p>
+        <form action="/note/{{member.id}}" method="POST">
+            <fieldset>
+                <textarea name="notes" rows="3">{{member.notes}}</textarea>
+                <input type="submit" value="Update Notes">
+            </fieldset>
+        </form>
 
         <footer>
-            <a href="/delete/{{member.id}}" onclick="return confirm('Are you sure you wish to delete {{team.name}}?');">Delete team</a>
+            <a href="/delete/member/{{member.id}}" onclick="return confirm('Are you sure you wish to delete {{member.name}}?');">Delete Member</a>
         </footer>
 
     </article>
 
 
-    <a role="button" href="/teams">Back to Teams</a>
+    <a role="button" href="/">Home</a>
 
 {% endblock %}
 

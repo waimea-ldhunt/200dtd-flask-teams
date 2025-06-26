@@ -49,7 +49,7 @@
 
         <p><strong>Add Member to {{team.name}}:</strong></p>
 
-        <form action="/add/{{team.code}}" method="POST">
+        <form action="/add/member/{{team.code}}" method="POST">
             <fieldset role="group">
                 <input name="name" placeholder="New Member Name">
                 <input type="submit" value="Add new member">
@@ -57,13 +57,13 @@
         </form>
 
         <footer>
-            <a href="/delete" onclick="return confirm('Are you sure you wish to delete {{team.name}}?');">Delete team</a>
+            <a href="/delete/team/{{team.code}}" onclick="return confirm('Are you sure you wish to delete {{team.name}}?');">Delete team</a>
         </footer>
 
     </article>
 
 
-    <a role="button" href="/teams">Back to Teams</a>
+    <a role="button" href="/">Home</a>
 
 {% endblock %}
 

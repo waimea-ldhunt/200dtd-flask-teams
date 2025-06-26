@@ -16,28 +16,64 @@
 
 
 {% block content %}
+    <article>
+        <h1>Teams</h1>
 
-    <h1>Teams</h1>
+        <table>
+            <thead>
+                <th>Code</th>
+                <th>Team</th>
 
-    <table>
-        <thead>
-            <th>Code</th>
-            <th>Team</th>
-            <th>Logo</th>
+            </thead>
+
+            <tbody>
+                {% for team in teams %}
+
+                    <tr>
+                        <td>{{team.code}}</td>
+                        <td><a href="/team/{{team.code}}">{{team.name}}</a></td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Add a new Team</h2>
+        <form action="/add/team" method="POST">
+            <fieldset role="group">
+                <input name="name" placeholder="Name" required>
+                <input name="code" placeholder="Code" required maxlength="3">
+            </fieldset>
+            <fieldset role="group">
+                <input name="description" placeholder="Description" required>
+                <input name="website" placeholder="Website" required>
+            </fieldset>
+                <input type="submit" value="Add New Team">
             
-        </thead>
-
-        <tbody>
-            {% for team in teams %}
-
-                <tr>
-                    <td>{{team.code}}</td>
-                    <td><a href="/team/{{team.code}}">{{team.name}}</a></td>
-                </tr>
-
-            {% endfor %}
-        </tbody>
-    </table>
+        </form>
+    </article>
+    <article>
+        <h1>Players</h1>
+    
+        <table>
+            <thead>
+                <th>Name</th>
+                <th>Team</th>
+                
+            </thead>
+    
+            <tbody>
+                {% for member in members %}
+    
+                    <tr>
+                        <td><a href="/member/{{member.id}}">{{member.name}}</a></td>
+                        <td><a href="/team/{{member.team}}">{{member.team}}</a></td>
+                    </tr>
+    
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
 
     
 

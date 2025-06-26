@@ -31,7 +31,12 @@ def index():
         sql = "SELECT code, name FROM teams ORDER BY name ASC"
         result = client.execute(sql)
         teams = result.rows
-    return render_template("pages/home.jinja",teams=teams)
+
+        sql = "SELECT id, name, team FROM members ORDER BY id ASC"
+        result = client.execute(sql)
+        members = result.rows
+
+    return render_template("pages/home.jinja",teams=teams, members=members)
 
 
 #-----------------------------------------------------------
@@ -84,31 +89,27 @@ def show_one_team(code):
         else:
             # No, so show error
             return not_found_error()
+        
+@app.get("/member/<int:id>")
+def show_one_player(id):
+
+    with connect_db() as client:
+
+        sql = """SELECT * FROM members WHERE id=?"""
+        params = [id]
+        result = client.execute(sql, params)
+
+        member = result.rows[0]
+
+        return render_template("pages/member.jinja", member=member)
+
 
 
 #-----------------------------------------------------------
 # Route for adding a thing, using data posted from a form
 #-----------------------------------------------------------
-@app.post("/add")
-def add_a_thing():
-    # Get the data from the form
-    name  = request.form.get("name")
-    price = request.form.get("price")
 
-    # Sanitise the text inputs
-    name = html.escape(name)
-
-    with connect_db() as client:
-        # Add the thing to the DB
-        sql = "INSERT INTO things (name, price) VALUES (?, ?)"
-        params = [name, price]
-        client.execute(sql, params)
-
-        # Go back to the home page
-        flash(f"Thing '{name}' added", "success")
-        return redirect("/things")
-    
-@app.post("/add/<string:code>")
+@app.post("/add/member/<string:code>")
 def add_a_player_to_specific_team(code):
     # Get the data from the form
     name  = request.form.get("name")
@@ -124,6 +125,30 @@ def add_a_player_to_specific_team(code):
 
         # Go back to the home page
         flash(f"Member '{name}' added", "success")
+        return redirect(f"/team/{code}")
+    
+@app.post("/add/team")
+def add_a_team():
+    # Get the data from the form
+    name  = request.form.get("name")
+    code  = request.form.get("code")
+    desc  = request.form.get("description")
+    site  = request.form.get("website")
+
+    # Sanitise the text inputs
+    name = html.escape(name)
+    code = html.escape(code)
+    desc = html.escape(desc)
+    site = html.escape(site)
+
+    with connect_db() as client:
+        # Add the thing to the DB
+        sql = "INSERT INTO teams (code, name, description, website) VALUES (?, ?, ?, ?)"
+        params = [code, name, desc, site]
+        client.execute(sql, params)
+
+        # Go back to the home page
+        flash(f"Team '{name}' added", "success")
         return redirect(f"/team/{code}")
 
 
@@ -141,6 +166,27 @@ def delete_a_member(id):
         # Go back to the home page
         flash("Member deleted", "success")
         return redirect("/")
+    
+@app.get("/delete/team/<string:code>")
+def delete_a_team(code):
+    with connect_db() as client:
+        # Delete the thing from the DB
+        sql = "DELETE FROM teams WHERE code=?"
+        params = [code]
+        client.execute(sql, params)
 
+        # Go back to the home page
+        flash(f"Team deleted", "success")
+        return redirect("/")
+    
+@app.post("/note/<int:id>")
+def update_notes(id):
+    with connect_db() as client:
+        notes = request.form.get("notes")
 
+        sql = "UPDATE members SET notes=? WHERE id=?"
+        params = [notes, id]
+        client.execute(sql, params)
 
+        flash("Notes Updated", "success")
+        return redirect(f"/member/{id}")
